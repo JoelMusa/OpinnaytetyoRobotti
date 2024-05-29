@@ -15,13 +15,7 @@ import time
 
 import csv
 
-#Valmis tyhjä iso CSV
 
-
-
-Isopaketti = 'GigaCSV.csv'
-with open(Isopaketti, mode='w') as Isopaketti:
-    pass
 
 
 
@@ -88,15 +82,24 @@ def Talleta_tiedot():
         print(Teosnimi)
 
         Kuvaus = selain.get_text('class:product-description.col-xs-12')
+        string = str(Kuvaus)
+        korjaus = string.replace('€', 'e')
+        Kuvaus = korjaus
+
+
         print(Kuvaus)
 
         selain.set_screenshot_directory('Kuvat')
 
         #Tallennusfunktio
 
+
         kohde = selain.get_element_attribute('class:carousel-bgimage', 'style')
         kohde = kohde[23:-3]
         print(kohde)
+
+        
+
 
         selain.go_to(kohde)
 
@@ -166,12 +169,11 @@ def Talleta_tiedot():
 
 
 
-                #CSV Joelille
+                #CSV tiedoston luonti
                 
                 teksti0 = 'Taideteos'
                 teksti1 = merkki
                 teksti2 = '.jpg'
-
 
                 sisältö0 = [teksti0+teksti1+teksti2]
                 sisältö1 = [Teosnimi]
@@ -180,33 +182,25 @@ def Talleta_tiedot():
                 sisältö4 = [Hinta]
                 sisältö5 = [ALV]
                 sisältö6 = [Tarjolla]
-
-
                 
                 tiedosto1 = 'GrafiaTeos'+str(kierros)+'.csv'
                 
                 global tiedostonimi                
                 tiedostonimi = tiedosto1
 
+                header = ['File Name', 'Artwork Name', 'Description', 'Date', 'Price', 'VAT', 'Available']
+
+                sisältö = [sisältö0, sisältö1, sisältö2, sisältö3, sisältö4, sisältö5, sisältö6]
+
 
                 with open(tiedosto1, 'w', newline='') as tiedosto1:
-                        kirjoittaja = csv.writer(tiedosto1)
-                        kirjoittaja.writerow(sisältö0)
-                        kirjoittaja.writerow(sisältö1)
-                        kirjoittaja.writerow(sisältö2)
-                        kirjoittaja.writerow(sisältö3)
-                        kirjoittaja.writerow(sisältö4)
-                        kirjoittaja.writerow(sisältö5)
-                        kirjoittaja.writerow(sisältö6)
-
-
+                        kirjoittaja = csv.writer(tiedosto1, quoting=csv.QUOTE_ALL)
+                        kirjoittaja.writerow(header)
+                        kirjoittaja.writerow(sisältö)
+                        
                 print(f"'CSV  {tiedosto1}' valmis")
 
-
                 #Giga CSV?
-
-
-
 
                 
                 #Kuva JPG
@@ -224,47 +218,30 @@ def Talleta_tiedot():
 
 
 
-""" 
-                #GigaCSV
-                def TeeGIGAcsv(Isopaketti, lisäys):
-                        
-                        lisäys = str(lisäys)  
-
-                        Isopaketti = 'GigaCSV.csv'
-                        Isopaketti = str(Isopaketti)
-
-                        with open(Isopaketti, mode='w', newline='') as file:
-                            
-
-                            pöytä = Tables()
-                            
-                            table = pöytä.read_table_from_csv(file)
-
-                            for row in lisäys:
-                                table.append_row(row)
-
-
-                            pöytä.write_table_to_csv(table, file)
-                   
-                TeeGIGAcsv('Isopaketti', tiedostonimi) """
-
-
-
-
-
-
-
            
 
 def Avaa_kokoelma():
     
+  
         teokset = selain.get_webelements(locator="class:store-item-image")
-        loppuunyydyt = selain.get_webelements(locator="class:store-item-sold-out")
-        miinus = len(loppuunyydyt)
+        loppuunyydyt = selain.get_webelements(locator="class:store-item-sold-out-banner-text")
         
+        miinus = len(loppuunyydyt)
+
+
+
+
         kerta = 0
+        kerta2 = 0
+        
         pituus2 = len(teokset)-miinus
         
+        pituus3 = len(teokset)
+
+
+
+
+
         while kerta < pituus2:
             klikkaa = teokset[kerta]
             selain.click_element(klikkaa)
@@ -273,12 +250,38 @@ def Avaa_kokoelma():
             Talleta_tiedot()
             selain.go_back()
 
+
+
+
+        while pituus2 < kerta:
+            klikkaa = loppuunyydyt[kerta2]
+            selain.click_element(klikkaa)
+
+            
+            Talleta_tiedot()
+            kerta+=1
+            kerta2+=1
+            selain.go_back()
+            
+            print(pituus2)
+            print(pituus3)
+            print(kerta)
+            print(kerta2)
+
+
+            if kerta == pituus3:
+                break
+
+
+
         loppuunyydyt == 0
         kerta == 0
+        kerta2 == 0
 
 
 
 def Etsi_kokoelma():
+
 
     kokoelma = selain.get_webelements(locator="class:store-navigation-subsection-name")
     print(len(kokoelma))
@@ -286,17 +289,26 @@ def Etsi_kokoelma():
     pituus = len(kokoelma)
     kohta = 0
     
+
     while kohta < pituus:
     
         selain.go_to("https://holvi.com/shop/grafia13/")
         kokoelma = selain.get_webelements(locator="class:store-navigation-subsection-name")
-
         paina = kokoelma[kohta]
         selain.click_element(paina)
+
 
         kohta+=1
         Avaa_kokoelma()
         selain.go_back()
+
+
+
+
+
+
+
+    
 
 
 
