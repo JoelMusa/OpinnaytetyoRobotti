@@ -197,7 +197,7 @@ def Talleta_tiedot():
                         kirjoittaja = csv.writer(tiedosto1, quoting=csv.QUOTE_ALL)
                         kirjoittaja.writerow(header)
                         kirjoittaja.writerow(sisältö)
-                        
+
                 print(f"'CSV  {tiedosto1}' valmis")
 
                 #Giga CSV?
@@ -221,62 +221,37 @@ def Talleta_tiedot():
            
 
 def Avaa_kokoelma():
+    teokset = selain.get_webelements(locator="class:store-item-image")
+    loppuunyydyt = selain.get_webelements(locator="class:store-item-sold-out-banner-text")
     
-  
-        teokset = selain.get_webelements(locator="class:store-item-image")
-        loppuunyydyt = selain.get_webelements(locator="class:store-item-sold-out-banner-text")
-        
-        miinus = len(loppuunyydyt)
+    miinus = len(loppuunyydyt)
 
+    kerta = 0
+    kerta2 = 0
+    
+    pituus2 = len(teokset) - miinus
+    pituus3 = len(teokset)
 
+    while kerta < pituus2:
+        klikkaa = teokset[kerta]
+        selain.click_element(klikkaa)
+        Talleta_tiedot()
+        selain.go_back()
+        kerta += 1
 
+    while kerta2 < miinus:
+        klikkaa = loppuunyydyt[kerta2]
+        selain.click_element(klikkaa)
+        Talleta_tiedot()
+        selain.go_back()
+        kerta2 += 1
 
-        kerta = 0
-        kerta2 = 0
-        
-        pituus2 = len(teokset)-miinus
-        
-        pituus3 = len(teokset)
+        if kerta2 == miinus:
+            break
 
-
-
-
-
-        while kerta < pituus2:
-            klikkaa = teokset[kerta]
-            selain.click_element(klikkaa)
-
-            kerta+=1
-            Talleta_tiedot()
-            selain.go_back()
-
-
-
-
-        while pituus2 < kerta:
-            klikkaa = loppuunyydyt[kerta2]
-            selain.click_element(klikkaa)
-
-            
-            Talleta_tiedot()
-            kerta+=1
-            kerta2+=1
-            selain.go_back()
-            
-            print(pituus2)
-            print(pituus3)
-            print(kerta)
-            print(kerta2)
-
-
-            if kerta == pituus3:
-                break
-
-
-
-        loppuunyydyt == 0
-        kerta == 0
-        kerta2 == 0
+    loppuunyydyt = 0
+    kerta = 0
+    kerta2 = 0
 
 
 
